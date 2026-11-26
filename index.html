@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>JVI Converter Free</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="JVI Free">
+<meta name="theme-color" content="#0f0f14">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Startup splash -->
+<div id="splash" class="screen splash">
+  <img src="icons/icon-512.png" alt="" class="splash-icon">
+  <div class="splash-title">JVI Converter <span class="free-tag">FREE</span></div>
+  <div class="spinner"></div>
+  <div id="splash-tip" class="splash-tip">Preparing your personal experience</div>
+  <div class="splash-foot">Proudly sponsored by Turning Point USA JVI</div>
+</div>
+
+<!-- Main app -->
+<div id="app" class="app hidden">
+  <header class="topbar">
+    <div class="brand"><img src="icons/icon-192.png" alt=""> JVI Converter <span class="free-tag">FREE</span></div>
+    <button class="pro-btn" data-paywall="JVI PRO">GO PRO 👑</button>
+  </header>
+
+  <div class="trial-strip" data-paywall="JVI PRO">⚠️ You are using the <b>FREE</b> version. 97% of features are locked. <u>Upgrade</u></div>
+
+  <main class="content">
+    <section class="card main-card">
+      <div class="card-title">Image → .JVI</div>
+      <div id="dropzone" class="dropzone">
+        <img id="preview" class="preview hidden" alt="">
+        <div id="dz-empty" class="dz-empty">
+          <div class="dz-icon">🖼️</div>
+          <div>No file selected</div>
+          <div class="dz-sub">Supports JPG, PNG, HEIC and 0 other formats</div>
+        </div>
+      </div>
+      <input id="file" type="file" accept="image/*" hidden>
+      <button id="choose" class="btn secondary">Choose a File</button>
+      <button id="convert" class="btn primary" disabled>Convert to .JVI</button>
+      <div class="limit-note">Free plan: 1 conversion at a time · Standard Definition JVI only</div>
+    </section>
+
+    <section class="card">
+      <div class="card-title">Premium Tools <span class="pro-badge">PRO</span></div>
+      <div class="tools">
+        <button class="tool" data-paywall=".JVI Batch Converter"><span class="t-ico">📦</span><span>.JVI Batch Converter</span><span class="lock">🔒 PRO</span></button>
+        <button class="tool" data-paywall="HD JVI (4K)"><span class="t-ico">✨</span><span>HD JVI (4K)</span><span class="lock">🔒 PRO</span></button>
+        <button class="tool" data-paywall="JVI Cloud Sync"><span class="t-ico">☁️</span><span>JVI Cloud Sync</span><span class="lock">🔒 PRO</span></button>
+        <button class="tool" data-paywall=".JVZ Archive Extractor"><span class="t-ico">🗜️</span><span>.JVZ Archive Extractor</span><span class="lock">🔒 PRO</span></button>
+        <button class="tool" data-paywall="JVI → JPG Reverse Converter"><span class="t-ico">🔁</span><span>JVI → JPG Reverse</span><span class="lock">🔒 PRO</span></button>
+        <button class="tool" data-paywall="Remove Ads"><span class="t-ico">🚫</span><span>Remove Ads</span><span class="lock">🔒 PRO</span></button>
+      </div>
+    </section>
+
+    <section class="card support-card">
+      <div class="card-title">Support Independent JVI Development</div>
+      <p class="muted">We are a small team of 1 (one) passionate engineer. Every conversion costs us money.</p>
+      <button class="btn patreon" data-patreon>Subscribe to our Patreon</button>
+      <button class="btn rent" id="rent-open">🏠 Pay our rent</button>
+    </section>
+
+    <div class="sponsor">Proudly sponsored by Turning Point USA JVI</div>
+    <div class="legal">JVI Converter Free v4.0.1 (build 0000069) · © JVI Technologies LLC (pending) · Terms apply. Terms are not available.</div>
+  </main>
+
+  <!-- Sticky banner ad -->
+  <div id="banner" class="banner">
+    <span class="ad-tag">AD</span>
+    <div id="banner-body" class="banner-body"></div>
+    <button class="banner-x" data-paywall="Remove Ads">✕</button>
+  </div>
+</div>
+
+<!-- Converting overlay -->
+<div id="converting" class="screen overlay hidden">
+  <div class="conv-box">
+    <div class="conv-title">Converting to .JVI</div>
+    <div class="ring"><div id="pct" class="pct">0%</div></div>
+    <div class="bar"><div id="bar-fill" class="bar-fill"></div></div>
+    <div id="conv-status" class="conv-status">Initializing JVI engine…</div>
+    <div class="conv-upsell" data-paywall="JVI Turbo Mode">⚡ PRO users convert 0.4 seconds faster. <u>Upgrade</u></div>
+  </div>
+</div>
+
+<!-- Interstitial ad -->
+<div id="interstitial" class="screen overlay hidden">
+  <div class="inter-box">
+    <div class="inter-top"><span class="ad-tag">AD</span><button id="inter-skip" class="skip" disabled>Skip ad in 5</button></div>
+    <div id="inter-body" class="inter-body"></div>
+    <div class="inter-foot" data-paywall="Remove Ads">Tired of ads? Remove them forever for just $14.99/mo.</div>
+  </div>
+</div>
+
+<!-- Result -->
+<div id="result" class="screen overlay hidden">
+  <div class="result-box">
+    <div class="ok">✅ Conversion complete!</div>
+    <img id="result-img" class="result-img" alt="Your JVI">
+    <div id="result-name" class="result-name">IMG_JVI_0000.JVI</div>
+    <div class="result-meta">Standard Definition · Compression: Maximum · Quality: Probably fine</div>
+    <button id="download" class="btn primary">Download .JVI</button>
+    <button class="btn ghost" data-paywall="HD JVI (4K)">✨ Download in HD JVI <span class="pro-badge">PRO</span></button>
+    <button id="again" class="btn secondary">Convert Another</button>
+  </div>
+</div>
+
+<!-- Paywall -->
+<div id="paywall" class="screen overlay hidden">
+  <div class="pay-box">
+    <button id="pay-x" class="pay-x hidden">✕</button>
+    <div class="crown">👑</div>
+    <div class="pay-title"><span id="pay-feature">This feature</span> is a <span class="gold">PRO</span> feature</div>
+    <ul class="perks">
+      <li>✔ .JVI Batch Converter (outputs .JVZ)</li>
+      <li>✔ HD JVI up to 4K (results may vary)</li>
+      <li>✔ Removes 3 of our 11 ad networks</li>
+      <li>✔ Priority access to our support fax line</li>
+    </ul>
+    <div class="price">Only <b>$14.99</b>/mo</div>
+    <div class="price-sub">First 2 days FREE, then billed monthly forever.</div>
+    <button class="btn primary big" data-patreon>Subscribe to our Patreon</button>
+    <div class="fine">
+      Cancel any time* after a 90-day written cancellation notice and early termination fee.
+      We accept <b>Bitcoin</b>. The only other accepted payment methods are <b>Diner's Club</b> or <b>Apple Store gift cards</b>.
+      *"Any time" defined as business hours on the third Tuesday of a leap month.
+    </div>
+    <button id="pay-later" class="later">No thanks, I enjoy an inferior experience</button>
+  </div>
+</div>
+
+<!-- Patreon nonsense -->
+<div id="patreon" class="screen overlay hidden">
+  <div class="pay-box">
+    <div class="crown">🤝</div>
+    <div class="pay-title" id="patreon-title">Connecting to Patreon…</div>
+    <div class="spinner dark" id="patreon-spin"></div>
+    <p class="muted" id="patreon-msg"></p>
+    <button id="patreon-close" class="later hidden">Close</button>
+  </div>
+</div>
+
+<!-- Pay our rent -->
+<div id="rent" class="screen sheet hidden">
+  <div class="rent-box">
+    <button id="rent-x" class="pay-x">✕</button>
+    <div class="rent-hero">🍜</div>
+    <h2>A Letter From Our Founder</h2>
+    <p>Dear valued user,</p>
+    <p>Only <b>1 in 4,000 users</b> pays our rent. Are you the reason we only have ramen in the cupboard?</p>
+    <p>Every time you convert an image to .JVI for free, a tiny server somewhere has to work. That server lives in our apartment. Our apartment has rent. Therefore, mathematically, <b>you</b> live in our apartment, and you have not paid rent.</p>
+    <p>Our landlord, Doug, has asked us "what a JVI is" and "why the power bill is like that." We could not answer him. We need your help to never answer him.</p>
+    <div class="meter-label">Community Rent Contribution This Month</div>
+    <div class="meter"><div class="meter-fill"></div></div>
+    <div class="meter-num">0.3% of $1,850 raised · 0 of you have helped</div>
+    <p>If every user gave just $14.99 a month, we could afford a second flavor of ramen. Think about that. Chicken. <i>And</i> beef.</p>
+    <p>We are not saying it is your fault. We are saying it is mostly your fault.</p>
+    <p class="sig">With love and mild resentment,<br><b>The Founder</b><br><span class="muted">JVI Technologies LLC (pending)</span></p>
+    <button class="btn rent" data-patreon>Pay Our Rent (via Patreon)</button>
+    <button id="rent-no" class="later">No, I'd rather they eat ramen</button>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
