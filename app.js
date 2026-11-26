@@ -154,6 +154,44 @@
     return { name, blob };
   }
 
+  // Huge "JVI Converter FREE" watermark baked into the output image
+  async function watermark(blob) {
+    const img = await new Promise((res, rej) => {
+      const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(blob);
+    });
+    const c = document.createElement('canvas');
+    c.width = img.naturalWidth; c.height = img.naturalHeight;
+    const g = c.getContext('2d');
+    g.drawImage(img, 0, 0);
+    const W = c.width, H = c.height, D = Math.hypot(W, H);
+    // tiled diagonal repeats
+    g.save();
+    g.translate(W / 2, H / 2); g.rotate(-Math.atan2(H, W));
+    const small = Math.round(D / 22);
+    g.font = `900 ${small}px -apple-system, Helvetica, Arial, sans-serif`;
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillStyle = 'rgba(255,255,255,0.28)';
+    for (let y = -D / 2; y <= D / 2; y += small * 2.2)
+      for (let x = -D / 2 + ((y / (small * 2.2)) % 2 ? small * 4 : 0); x <= D / 2; x += small * 8.5)
+        g.fillText('JVI Converter FREE', x, y);
+    // giant center mark
+    const big = Math.round(D / 8.5);
+    g.font = `900 ${big}px -apple-system, Helvetica, Arial, sans-serif`;
+    g.lineWidth = Math.max(3, big / 18);
+    g.strokeStyle = 'rgba(0,0,0,0.45)'; g.fillStyle = 'rgba(255,255,255,0.72)';
+    g.strokeText('JVI Converter', 0, -big * 0.45); g.fillText('JVI Converter', 0, -big * 0.45);
+    g.fillStyle = 'rgba(255,204,51,0.85)';
+    g.strokeText('FREE', 0, big * 0.6); g.fillText('FREE', 0, big * 0.6);
+    g.restore();
+    // footer strip
+    const fs = Math.max(14, Math.round(H / 32));
+    g.fillStyle = 'rgba(0,0,0,0.65)'; g.fillRect(0, H - fs * 1.8, W, fs * 1.8);
+    g.font = `700 ${fs}px -apple-system, Helvetica, Arial, sans-serif`;
+    g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText('Made with JVI Converter FREE · Upgrade to PRO to remove watermark', W / 2, H - fs * 0.9, W * 0.95);
+    return new Promise((res) => c.toBlob(res, 'image/jpeg', 0.9));
+  }
+
   let output = null;
   $('convert').onclick = async () => {
     const ov = $('converting');
@@ -185,7 +223,8 @@
     });
     await sleep(400);
     hide(ov);
-    const { blob } = await picked;
+    const { blob: raw } = await picked;
+    const blob = await watermark(raw);
     await showInterstitial();
     const num = String(Math.floor(Math.random() * 9000) + 1000);
     const ext = (blob.type.split('/')[1] || 'jpg').replace('jpeg', 'jpg');
